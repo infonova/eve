@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+
+	"git.infonova.at/totalrecall/eve/events"
 )
 
 const maxLength int64 = 1024 * 512
 
 func LogsIndex(w http.ResponseWriter, r *http.Request) {
-	var content = &Log{}
+	var content = &events.Log{}
 	err := json.NewDecoder(io.LimitReader(r.Body, maxLength)).Decode(&content)
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	if err != nil {
@@ -19,7 +21,6 @@ func LogsIndex(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprint(w, content.Message+"\n", content.ProjectId+"\n", content.TargetId+"\n", content.Timestamp)
 }
 
 func MetricsIndex(w http.ResponseWriter, r *http.Request) {
