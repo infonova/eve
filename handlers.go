@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"git.infonova.at/totalrecall/eve/events"
+	"github.com/Shopify/sarama"
 )
 
 const maxLength int64 = 1024 * 512
@@ -18,6 +19,11 @@ func LogsIndex(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
+	}
+
+	asyncEventProducer.Input() <- &sarama.ProducerMessage{
+		Topic: "logs",
+		Value: content,
 	}
 
 	w.WriteHeader(http.StatusOK)

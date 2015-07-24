@@ -1,6 +1,8 @@
 package events
 
-import "time"
+import (
+	"time"
+)
 
 type Event struct {
 	//totalrecall specific fields
@@ -8,11 +10,14 @@ type Event struct {
 	TargetId    string `json:"targetid"`
 	Application string `json:"application"`
 	Config      string `json:"config"`
-	//logstash specific fields
+	//eventstash specific fields
 	Message   string    `json:"message"`
-	Type      string    `json:type"`
-	Host      string    `json:host"`
-	Path      string    `json:path"`
-	Tags      string    `json:tags"`
+	Type      string    `json:"type"`
+	Host      string    `json:"host"`
+	Path      string    `json:"path"`
+	Tags      string    `json:"tags"`
 	Timestamp time.Time `json:"@timestamp"`
+
+	encoded []byte
+	err     error
 }
