@@ -10,7 +10,7 @@ type Event struct {
 	TargetId    string `json:"targetid"`
 	Application string `json:"application"`
 	Config      string `json:"config"`
-	//eventstash specific fields
+	//logstash specific fields
 	Message   string    `json:"message"`
 	Type      string    `json:"type"`
 	Host      string    `json:"host"`
