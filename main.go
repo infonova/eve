@@ -10,9 +10,9 @@ import (
 )
 
 var (
-	ip                 = flag.String("ip", "0.0.0.0", "ip address (default 0.0.0.0)")
-	port               = flag.String("port", "8080", "port (default 8080)")
-	kafkaConnect       = flag.String("kafka_connect", "localhost:9092", "kafka broker list (default localhost:9092)")
+	ip                 = flag.String("ip", "0.0.0.0", "ip address")
+	port               = flag.String("port", "8080", "port")
+	kafkaConnect       = flag.String("kafka_connect", "localhost:9092", "kafka broker list")
 	asyncEventProducer sarama.AsyncProducer
 )
 
@@ -23,8 +23,9 @@ func main() {
 
 	brokerList := strings.Split(*kafkaConnect, ",")
 
-	log.Println("Initializing kafka producer with connection string " + *kafkaConnect)
+	log.Println("Initializing kafka producer connecting to " + *kafkaConnect)
 	asyncEventProducer = NewAsyncEventProducer(brokerList)
 
+	log.Println("Starting http server listening on port " + *port)
 	log.Fatal(http.ListenAndServe(*ip+":"+*port, router))
 }

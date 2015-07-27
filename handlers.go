@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 
 	"git.infonova.at/totalrecall/eve/events"
@@ -13,17 +14,27 @@ import (
 const maxLength int64 = 1024 * 512
 
 func LogsIndex(w http.ResponseWriter, r *http.Request) {
-	var content = &events.Log{}
-	err := json.NewDecoder(io.LimitReader(r.Body, maxLength)).Decode(&content)
+	var logEvent = &events.Log{}
+
+	err := json.NewDecoder(io.LimitReader(r.Body, maxLength)).Decode(&logEvent)
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	if err != nil {
+		log.Println("Error during decoding: " + err.Error())
 		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	if err := logEvent.IsValid(); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		jsonEvent, _ := json.Marshal(logEvent)
+		log.Println(err)
+		fmt.Println(string(jsonEvent))
 		return
 	}
 
 	asyncEventProducer.Input() <- &sarama.ProducerMessage{
 		Topic: "logs",
-		Value: content,
+		Value: logEvent,
 	}
 
 	w.WriteHeader(http.StatusOK)

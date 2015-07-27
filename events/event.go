@@ -1,23 +1,34 @@
 package events
 
 import (
-	"time"
+	"errors"
+
+	"github.com/astaxie/beego/validation"
 )
 
 type Event struct {
-	//totalrecall specific fields
-	ProjectId   string `json:"projectid"`
+	ProjectId   string `json:"projectid" valid:"Required"`
 	TargetId    string `json:"targetid"`
-	Application string `json:"application"`
-	Config      string `json:"config"`
-	//logstash specific fields
-	Message   string    `json:"message"`
-	Type      string    `json:"type"`
-	Host      string    `json:"host"`
-	Path      string    `json:"path"`
-	Tags      string    `json:"tags"`
-	Timestamp time.Time `json:"@timestamp"`
+	Application string `json:"application,omitempty"`
+	Config      string `json:"config,omitempty"`
+}
 
-	encoded []byte
-	err     error
+type EventValidator struct {
+	err error
+}
+
+func (ev *EventValidator) validateEvent(event interface{}) {
+	if ev.err != nil {
+		return
+	}
+
+	valid := validation.Validation{}
+	b, err := valid.Valid(event)
+	if err != nil {
+		ev.err = err
+	}
+
+	if !b {
+		ev.err = errors.New("Invalid event")
+	}
 }

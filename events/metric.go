@@ -2,10 +2,10 @@ package events
 
 type Metric struct {
 	Event
-	Input    string `json:"input"`
-	Comp     string `json:"comp"`
-	Module   string `json:"module"`
-	Instance string `json:"instance"`
-	Metric   string `json:"metric"`
-	Service  string `json:"service"`
+	Input    string `json:"input,omitempty"`
+	Comp     string `json:"comp,omitempty"`
+	Module   string `json:"module,omitempty"`
+	Instance string `json:"instance,omitempty"`
+	Metric   string `json:"metric" valid:"Required"`
+	Service  string `json:"service" valid:"Required"`
 }
