@@ -1,0 +1,22 @@
+### eve configuration file
+
+title = "EvE - Event Entrance"
+
+###
+### [http]
+###
+### Endpoint configuration
+###
+
+[http]
+hostname = "localhost"
+bind_address = ":8080"
+
+###
+### [kafka]
+###
+### Kafka configuration
+###
+
+[kafka]
+connect = "localhost:9092"
