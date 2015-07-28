@@ -9,5 +9,6 @@ type Httpd struct {
 	Request     string `json:"request,omitempty"`
 	Response    string `json:"response,omitempty"`
 	Verb        string `json:"verb,omitempty"`
-	Origin      string `json:"origin,omitempty"`
+	Referrer    string `json:"referrer,omitempty"`
+	Agent       string `json:"agent,omitempty"`
 }

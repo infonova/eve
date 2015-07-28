@@ -34,8 +34,6 @@ func (logEvent *Log) IsValid() error {
 	ev := &EventValidator{}
 	ev.validateEvent(&logEvent.Event)
 	ev.validateEvent(&logEvent.Logstash)
-	ev.validateEvent(&logEvent.Httpd)
-	ev.validateEvent(&logEvent.Application)
 	if ev.err != nil {
 		return ev.err
 	}
