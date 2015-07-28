@@ -2,3 +2,6 @@
 tags
 eve
 etc/eve.toml
+etc/eve.version
+bin/
+log/

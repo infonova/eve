@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/BurntSushi/toml"
@@ -10,6 +12,9 @@ import (
 )
 
 const (
+	// Default title
+	DefaultTitle = "EvE - Event Entrance"
+
 	// Default hostname for http server
 	DefaultHostname = "localhost"
 
@@ -41,13 +46,20 @@ type kafkaInfo struct {
 
 func main() {
 	var config tomlConfig
-	if _, err := toml.DecodeFile("etc/eve.toml", &config); err != nil {
+
+	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	if _, err := toml.DecodeFile(dir+"/../etc/eve.toml", &config); err != nil {
 		log.Println("No eve.toml configuration file found, taking defaults.")
-		config.Title = "EvE - Event Entrance"
+		config.Title = DefaultTitle
 		config.Http.Hostname = DefaultHostname
 		config.Http.BindAddress = DefaultBindAddress
 		config.Kafka.Connect = DefaultKafkaConnect
 	}
+
 	log.Println("Starting " + config.Title)
 
 	router := NewRouter()
