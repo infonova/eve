@@ -11,7 +11,7 @@ while getopts "sx" opt; do
     case ${opt} in
         s)
             printf "Starting eve...\n"
-            nohup ${dir}/bin/eve >> ${dir}/log/eve.log 2>&1 & echo $! > ${dir}/.eve.pid
+            nohup ${dir}/bin/eve -config-file ${dir)/etc/eve.toml >> ${dir}/log/eve.log 2>&1 & echo $! > ${dir}/.eve.pid
             ;;
         x)
             printf "Stopping eve...\n"

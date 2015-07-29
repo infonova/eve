@@ -10,6 +10,7 @@ dir="$(cd -P "$(dirname "${source}")/.." && pwd )"
 cd ${dir}
 
 # remove old folders and create new ones
+echo "==> Removing old folders"
 rm -rf bin/*
 rm -rf log/*
 mkdir -p bin/
@@ -19,6 +20,7 @@ mkdir -p log/
 git_commit=$(git rev-parse HEAD)
 
 # build
+echo "==> Building..."
 go build
 cp eve bin/
 cp scripts/eve.sh bin/
