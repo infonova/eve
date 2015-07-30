@@ -2,6 +2,7 @@ package events
 
 import (
 	"encoding/json"
+	"time"
 )
 
 type EndpointDefinition struct {
@@ -12,11 +13,12 @@ type EndpointDefinition struct {
 
 type Trace struct {
 	Event
-	Traceid  int64  `json:"traceid" valid:"Required"`
-	Spanid   int64  `json:"spanid" valid:"Required"`
-	Name     string `json:"name" valid:"Required"`
-	Parentid int64  `json:"parentid" valid:"Required"`
-	Tla      []struct {
+	Traceid   int64     `json:"traceid" valid:"Required"`
+	Spanid    int64     `json:"spanid" valid:"Required"`
+	Name      string    `json:"name" valid:"Required"`
+	Parentid  int64     `json:"parentid" valid:"Required"`
+	Timestamp time.Time `json:"@timestamp" valid:"Required"`
+	Tla       []struct {
 		Timestamp int64  `json:"timestamp" valid:"Required"`
 		Value     string `json:"value" valid:"Required"`
 		Endpoint  struct {
