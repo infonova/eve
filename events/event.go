@@ -2,9 +2,14 @@ package events
 
 import (
 	"errors"
+	"log"
 
 	"github.com/astaxie/beego/validation"
 )
+
+type EventInterface interface {
+	IsValid() error
+}
 
 type Event struct {
 	ProjectId   string `json:"projectid" valid:"Required"`
@@ -29,6 +34,10 @@ func (ev *EventValidator) validateEvent(event interface{}) {
 	}
 
 	if !b {
+		for _, err := range valid.Errors {
+			log.Println(err.Key, err.Message)
+		}
+
 		ev.err = errors.New("Invalid event")
 	}
 }

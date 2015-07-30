@@ -1,4 +1,5 @@
-Godeps
-Makefile
-beego/validation
-http://jwt.io/
+- Godeps: dependency mgmt
+- Refactor logging
+- json web token for endpoint auth
+- packaging improvements
+- tests

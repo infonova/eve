@@ -38,34 +38,77 @@ func LogsIndex(w http.ResponseWriter, r *http.Request) {
 	var writer = &loggedWriter{w, r, time.Now()}
 	var logEvent = &events.Log{}
 
-	err := json.NewDecoder(io.LimitReader(r.Body, maxLength)).Decode(&logEvent)
+	var status = handleEvent(logEvent, r)
+
+	if status == http.StatusOK {
+		asyncEventProducer.Input() <- &sarama.ProducerMessage{
+			Topic: "logs",
+			Value: logEvent,
+		}
+	}
+
 	writer.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	if err != nil {
-		log.Println("Error during decoding: " + err.Error())
-		writer.WriteHeader(http.StatusBadRequest)
-		return
-	}
-
-	if err := logEvent.IsValid(); err != nil {
-		writer.WriteHeader(http.StatusBadRequest)
-		jsonEvent, _ := json.Marshal(logEvent)
-		log.Println(err)
-		fmt.Println(string(jsonEvent))
-		return
-	}
-
-	asyncEventProducer.Input() <- &sarama.ProducerMessage{
-		Topic: "logs",
-		Value: logEvent,
-	}
-
-	writer.WriteHeader(http.StatusOK)
+	writer.WriteHeader(status)
 }
 
 func MetricsIndex(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Metrics endpoint")
+	var writer = &loggedWriter{w, r, time.Now()}
+	var metricEvent = &events.Metric{}
+
+	var status = handleEvent(metricEvent, r)
+
+	if status == http.StatusOK {
+		asyncEventProducer.Input() <- &sarama.ProducerMessage{
+			Topic: "metrics",
+			Value: metricEvent,
+		}
+	}
+
+	writer.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	writer.WriteHeader(status)
 }
 
 func TracesIndex(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Traces endpoint")
+	var writer = &loggedWriter{w, r, time.Now()}
+	var traceEvent = &events.Trace{}
+
+	var status = handleEvent(traceEvent, r)
+	if status == http.StatusOK {
+		asyncEventProducer.Input() <- &sarama.ProducerMessage{
+			Topic: "traces",
+			Value: traceEvent,
+		}
+	}
+
+	writer.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	writer.WriteHeader(status)
+}
+
+func handleEvent(event interface{}, r *http.Request) int {
+	var myEvent events.EventInterface
+	switch eventType := event.(type) {
+	case *events.Log:
+		myEvent, _ = event.(*events.Log)
+	case *events.Metric:
+		myEvent, _ = event.(*events.Metric)
+	case *events.Trace:
+		myEvent, _ = event.(*events.Trace)
+	default:
+		log.Println("Unexpected type %T", eventType)
+		return http.StatusBadRequest
+	}
+
+	err := json.NewDecoder(io.LimitReader(r.Body, maxLength)).Decode(&myEvent)
+	if err != nil {
+		log.Println("Error during decoding: " + err.Error())
+		return http.StatusBadRequest
+	}
+	if err := myEvent.IsValid(); err != nil {
+		jsonEvent, _ := json.Marshal(myEvent)
+		log.Println(err)
+		fmt.Println(string(jsonEvent))
+		return http.StatusBadRequest
+	}
+
+	return http.StatusOK
 }
