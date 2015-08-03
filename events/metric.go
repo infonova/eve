@@ -5,7 +5,7 @@ import (
 )
 
 type Metric struct {
-	Event
+	Totalrecall
 	Logstash
 	Riemann
 	Collectd
@@ -32,7 +32,7 @@ func (metricEvent *Metric) Encode() ([]byte, error) {
 
 func (metricEvent *Metric) IsValid() error {
 	ev := &EventValidator{}
-	ev.validateEvent(&metricEvent.Event)
+	ev.validateEvent(&metricEvent.Totalrecall)
 	ev.validateEvent(&metricEvent.Logstash)
 	ev.validateEvent(&metricEvent.Riemann)
 	ev.validateEvent(&metricEvent.Collectd)

@@ -5,10 +5,10 @@ import (
 )
 
 type Logstash struct {
-	Message   string    `json:"message" valid:"Required"`
-	Type      string    `json:"type,omitempty"`
 	Host      string    `json:"host" valid:"Required"`
+	Timestamp time.Time `json:"@timestamp" valid:"Required"`
+	Message   string    `json:"message,omitempty"`
+	Type      string    `json:"type,omitempty"`
 	Path      string    `json:"path,omitempty"`
 	Tags      string    `json:"tags,omitempty"`
-	Timestamp time.Time `json:"@timestamp" valid:"Required"`
 }

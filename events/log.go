@@ -5,7 +5,7 @@ import (
 )
 
 type Log struct {
-	Event
+	Totalrecall
 	Logstash
 	Httpd
 	Application
@@ -32,7 +32,7 @@ func (logEvent *Log) Encode() ([]byte, error) {
 
 func (logEvent *Log) IsValid() error {
 	ev := &EventValidator{}
-	ev.validateEvent(&logEvent.Event)
+	ev.validateEvent(&logEvent.Totalrecall)
 	ev.validateEvent(&logEvent.Logstash)
 	if ev.err != nil {
 		return ev.err

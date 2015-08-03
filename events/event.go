@@ -11,13 +11,6 @@ type EventInterface interface {
 	IsValid() error
 }
 
-type Event struct {
-	ProjectId   string `json:"projectid" valid:"Required"`
-	TargetId    string `json:"targetid" valid:"Required"`
-	Application string `json:"application,omitempty"`
-	Config      string `json:"config,omitempty"`
-}
-
 type EventValidator struct {
 	err error
 }

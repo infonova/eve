@@ -1,6 +1,7 @@
 .git/
 tags
 eve
+eve.tar.gz
 etc/eve.toml
 etc/eve.version
 bin/

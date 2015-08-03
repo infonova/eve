@@ -12,7 +12,7 @@ type EndpointDefinition struct {
 }
 
 type Trace struct {
-	Event
+	Totalrecall
 	Traceid   int64     `json:"traceid" valid:"Required"`
 	Spanid    int64     `json:"spanid" valid:"Required"`
 	Name      string    `json:"name" valid:"Required"`
@@ -55,7 +55,7 @@ func (traceEvent *Trace) Encode() ([]byte, error) {
 
 func (traceEvent *Trace) IsValid() error {
 	ev := &EventValidator{}
-	ev.validateEvent(&traceEvent.Event)
+	ev.validateEvent(&traceEvent.Totalrecall)
 	ev.validateEvent(traceEvent)
 	for _, item := range traceEvent.Tla {
 		ev.validateEvent(item)
