@@ -5,4 +5,5 @@ type Totalrecall struct {
 	TargetId    string `json:"targetid" valid:"Required"`
 	Application string `json:"application,omitempty"`
 	Config      string `json:"config,omitempty"`
+	Topic       string `json:"topic,omitempty"`
 }

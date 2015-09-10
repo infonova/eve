@@ -41,6 +41,7 @@ func LogsIndex(w http.ResponseWriter, r *http.Request) {
 	var status = handleEvent(logEvent, r)
 
 	if status == http.StatusOK {
+		logEvent.Totalrecall.Topic = "logs"
 		asyncEventProducer.Input() <- &sarama.ProducerMessage{
 			Topic: "logs",
 			Value: logEvent,
@@ -58,6 +59,7 @@ func MetricsIndex(w http.ResponseWriter, r *http.Request) {
 	var status = handleEvent(metricEvent, r)
 
 	if status == http.StatusOK {
+		metricEvent.Totalrecall.Topic = "metrics"
 		asyncEventProducer.Input() <- &sarama.ProducerMessage{
 			Topic: "metrics",
 			Value: metricEvent,
@@ -74,6 +76,7 @@ func TracesIndex(w http.ResponseWriter, r *http.Request) {
 
 	var status = handleEvent(traceEvent, r)
 	if status == http.StatusOK {
+		traceEvent.Totalrecall.Topic = "traces"
 		asyncEventProducer.Input() <- &sarama.ProducerMessage{
 			Topic: "traces",
 			Value: traceEvent,
