@@ -21,11 +21,13 @@ git_commit=$(git rev-parse HEAD)
 
 # build
 echo "==> Building..."
+source ./version.info
 go build
 cp eve bin/
 cp scripts/eve.sh bin/
-echo ${git_commit} > etc/eve.version
+echo ${eve_version} > etc/eve.version
+echo ${git_commit} >> etc/eve.version
 cd ..
-tar -czf eve.tar.gz eve/bin eve/log eve/etc/eve.toml.sample eve/etc/eve.version
+tar -czf eve-${eve_version}.tar.gz eve/bin eve/log eve/etc/eve.toml.sample eve/etc/eve.version --transform s/eve/eve-${eve_version}/
 cd -
-mv ../eve.tar.gz .
+mv ../eve-${eve_version}.tar.gz .
