@@ -21,6 +21,8 @@ type loggedWriter struct {
 }
 
 func (w *loggedWriter) WriteHeader(status int) {
+	w.w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.w.WriteHeader(status)
 	log.Printf(
 		"%s\t%s\t%s\t%s\t%d\t%s",
 		w.r.RemoteAddr,
@@ -48,7 +50,6 @@ func LogsIndex(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	writer.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	writer.WriteHeader(status)
 }
 
@@ -66,7 +67,6 @@ func MetricsIndex(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	writer.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	writer.WriteHeader(status)
 }
 
@@ -83,7 +83,6 @@ func TracesIndex(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	writer.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	writer.WriteHeader(status)
 }
 
