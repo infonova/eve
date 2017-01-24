@@ -13,21 +13,27 @@ type Routes []Route
 
 var routes = Routes{
 	Route{
-		"LogsIndex",
+		"JSONLogsIndex",
 		"POST",
-		"/logs",
-		LogsIndex,
+		"/json/logs",
+		JsonLogsIndex,
 	},
 	Route{
-		"MetricsIndex",
+		"JSONMetricsIndex",
 		"POST",
-		"/metrics",
-		MetricsIndex,
+		"/json/metrics",
+		JsonMetricsIndex,
 	},
 	Route{
-		"TracesIndex",
+		"JSONTracesIndex",
 		"POST",
-		"/traces",
-		TracesIndex,
+		"/json/traces",
+		JsonTracesIndex,
+	},
+	Route{
+		"PrometheusIndex",
+		"POST",
+		"/prometheus",
+		PrometheusIndex,
 	},
 }

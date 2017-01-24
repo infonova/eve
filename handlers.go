@@ -4,12 +4,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"time"
 
 	"git.infonova.at/totalrecall/eve/events"
 	"github.com/Shopify/sarama"
+	"github.com/golang/protobuf/proto"
+	"github.com/golang/snappy"
+	"github.com/prometheus/prometheus/storage/remote"
 )
 
 const maxLength int64 = 1024 * 512
@@ -36,11 +40,11 @@ func (w *loggedWriter) WriteHeader(status int) {
 
 func (w *loggedWriter) Header() http.Header { return w.w.Header() }
 
-func LogsIndex(w http.ResponseWriter, r *http.Request) {
+func JsonLogsIndex(w http.ResponseWriter, r *http.Request) {
 	var writer = &loggedWriter{w, r, time.Now()}
 	var logEvent = &events.Log{}
 
-	var status = handleEvent(logEvent, r)
+	var status = handleJsonEvent(logEvent, r)
 
 	if status == http.StatusOK {
 		logEvent.Totalrecall.Topic = "logs"
@@ -53,11 +57,11 @@ func LogsIndex(w http.ResponseWriter, r *http.Request) {
 	writer.WriteHeader(status)
 }
 
-func MetricsIndex(w http.ResponseWriter, r *http.Request) {
+func JsonMetricsIndex(w http.ResponseWriter, r *http.Request) {
 	var writer = &loggedWriter{w, r, time.Now()}
 	var metricEvent = &events.Metric{}
 
-	var status = handleEvent(metricEvent, r)
+	var status = handleJsonEvent(metricEvent, r)
 
 	if status == http.StatusOK {
 		metricEvent.Totalrecall.Topic = "metrics"
@@ -70,11 +74,11 @@ func MetricsIndex(w http.ResponseWriter, r *http.Request) {
 	writer.WriteHeader(status)
 }
 
-func TracesIndex(w http.ResponseWriter, r *http.Request) {
+func JsonTracesIndex(w http.ResponseWriter, r *http.Request) {
 	var writer = &loggedWriter{w, r, time.Now()}
 	var traceEvent = &events.Trace{}
 
-	var status = handleEvent(traceEvent, r)
+	var status = handleJsonEvent(traceEvent, r)
 	if status == http.StatusOK {
 		traceEvent.Totalrecall.Topic = "traces"
 		asyncEventProducer.Input() <- &sarama.ProducerMessage{
@@ -86,7 +90,7 @@ func TracesIndex(w http.ResponseWriter, r *http.Request) {
 	writer.WriteHeader(status)
 }
 
-func handleEvent(event interface{}, r *http.Request) int {
+func handleJsonEvent(event interface{}, r *http.Request) int {
 	var myEvent events.EventInterface
 	switch eventType := event.(type) {
 	case *events.Log:
@@ -113,4 +117,43 @@ func handleEvent(event interface{}, r *http.Request) int {
 	}
 
 	return http.StatusOK
+}
+
+func PrometheusIndex(w http.ResponseWriter, r *http.Request) {
+	reqBuf, err := ioutil.ReadAll(snappy.NewReader(r.Body))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	var req remote.WriteRequest
+	if err := proto.Unmarshal(reqBuf, &req); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	for _, ts := range req.Timeseries {
+		jsonmap := map[string]interface{}{}
+
+		for _, l := range ts.Labels {
+			jsonmap[l.Name] = l.Value
+		}
+
+		for _, s := range ts.Samples {
+			jsonmap["value"] = s.Value
+			jsonmap["timestamp"] = s.TimestampMs
+		}
+
+		b, err := json.Marshal(jsonmap)
+		if err != nil {
+			fmt.Println(jsonmap)
+			fmt.Println(err)
+			return
+		}
+
+		asyncEventProducer.Input() <- &sarama.ProducerMessage{
+			Topic: "prometheus",
+			Value: sarama.StringEncoder(b),
+		}
+	}
 }
