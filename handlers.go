@@ -141,7 +141,7 @@ func PrometheusIndex(w http.ResponseWriter, r *http.Request) {
 
 		for _, s := range ts.Samples {
 			jsonmap["value"] = s.Value
-			jsonmap["timestamp"] = s.TimestampMs
+			jsonmap["timestamp"] = float64(s.TimestampMs) / 1000
 		}
 
 		b, err := json.Marshal(jsonmap)
