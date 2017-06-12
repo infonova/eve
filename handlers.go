@@ -9,10 +9,10 @@ import (
 	"net/http"
 	"time"
 
-	"git.infonova.at/totalrecall/eve/events"
 	"github.com/Shopify/sarama"
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/snappy"
+	"github.com/infonova/eve/events"
 	"github.com/prometheus/prometheus/storage/remote"
 )
 

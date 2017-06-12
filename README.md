@@ -1,1 +1,1 @@
-![eve - event entrance](docs/eve.png)
+Event Entrance
